@@ -1,2 +1,1 @@
-a = input("Enter username: ")
-print("Your username is: "+a)
+#This is a comment
