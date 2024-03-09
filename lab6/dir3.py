@@ -9,5 +9,5 @@ def get_filename_and_directory(path):
         print(f"Directory: {directory}")
     else:
         print("Path does not exist.")
-path = "/path/to/your/file_or_directory"
+path = os.getcwd()
 get_filename_and_directory(path)

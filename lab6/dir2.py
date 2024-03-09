@@ -12,5 +12,5 @@ def check_access(path):
     print(f"Writable: {writable}")
     print(f"Executable: {executable}")
 
-path = "/path/to/your/directory_or_file"
+path = os.getcwd()
 check_access(path)
