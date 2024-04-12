@@ -1,4 +1,5 @@
-import pygame, sys
+import pygame
+import sys
 from pygame.locals import *
 import random
 
@@ -8,8 +9,8 @@ FPS = 60
 FramePerSec = pygame.time.Clock()
 
 # Predefined some colors
-BLUE  = (0, 0, 255)
-RED   = (255, 0, 0)
+BLUE = (0, 0, 255)
+RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -18,30 +19,60 @@ WHITE = (255, 255, 255)
 SCREEN_WIDTH = 400
 SCREEN_HEIGHT = 600
 
-DISPLAYSURF = pygame.display.set_mode((400,600))
+DISPLAYSURF = pygame.display.set_mode((600, 800))
 DISPLAYSURF.fill(WHITE)
-pygame.display.set_caption("Game")
+pygame.display.set_caption("rasist")
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Enemy.png")
+        self.image = pygame.image.load("enemy.png")
         self.rect = self.image.get_rect()
-        self.rect.center=(random.randint(40,SCREEN_WIDTH-40),0)
+        self.reset()
+
+    def reset(self):
+        column_width = SCREEN_WIDTH // 3  # Divide the screen width into 3 columns
+        column = random.randint(0, 2)  # Randomly select a column (0, 1, or 2)
+        self.rect.x = column * column_width + random.randint(0, column_width - self.rect.width)
+        self.rect.y = random.randint(-self.rect.height * 2, -self.rect.height)
+        self.speed = random.randint(1, 3)
 
     def move(self):
-        self.rect.move_ip(0,10)
-        if (self.rect.bottom > 600):
-            self.rect.top = 0
-            self.rect.center = (random.randint(30, 370), 0)
+        self.rect.move_ip(0, self.speed)
+        if self.rect.top > SCREEN_HEIGHT:
+            self.reset()
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
+class Coin(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("coin.png")
+        self.image = pygame.transform.scale(self.image, (60, 60))
+        self.rect = self.image.get_rect()
+        self.reset()
+
+    def reset(self):
+        column_width = SCREEN_WIDTH // 3  # Divide the screen width into 3 columns
+        column = random.randint(0, 2)  # Randomly select a column (0, 1, or 2)
+        self.rect.x = column * column_width + random.randint(0, column_width - self.rect.width)
+        self.rect.y = random.randint(-self.rect.height * 2, -self.rect.height)
+        self.speed = random.randint(1, 3)
+
+    def move(self):
+        self.rect.move_ip(0, self.speed)
+        if self.rect.top > SCREEN_HEIGHT:
+            self.reset()
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Player.png")
+        self.image = pygame.image.load("player.png")
         self.rect = self.image.get_rect()
         self.rect.center = (160, 520)
 
@@ -53,25 +84,6 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right < SCREEN_WIDTH:
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(5, 0)
-
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-
-# Define the Coin class
-class Coin(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("Coin.png")
-        # Scale the image to a smaller size, for example, half its original size
-        self.image = pygame.transform.scale(self.image, (60, 60))
-        self.rect = self.image.get_rect()
-        self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
-        self.speed = 5
-
-    def move(self):
-        self.rect.move_ip(0, self.speed)
-        if self.rect.top > SCREEN_HEIGHT:
-            self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -101,7 +113,7 @@ while True:
     # Check for collision between player and coin
     if pygame.sprite.collide_rect(P1, C1):
         collected_coins += 1
-        C1.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
+        C1.reset()
 
     # Check for collision between enemy and player
     if pygame.sprite.collide_rect(E1, P1):
